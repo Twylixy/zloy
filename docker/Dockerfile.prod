@@ -1,0 +1,39 @@
+# IMAGE
+FROM python:3.9.8-alpine
+
+# Env vars
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Create app directory
+RUN mkdir -p /home/zloy
+
+# Create app user
+RUN addgroup -S zloy && adduser -S zloy -G zloy
+
+# Create dirs for project
+ENV PROJECT_HOME=/home/zloy/zloy_bot
+RUN mkdir -p ${PROJECT_HOME}
+WORKDIR ${PROJECT_HOME}
+
+# Add project's files
+COPY . .
+
+# Copy entrypoint.prod.sh
+RUN chmod +x ${PROJECT_HOME}/docker/entrypoint.prod.sh
+
+# Install project dependencies
+RUN apk update
+RUN apk add postgresql-dev gcc musl-dev
+RUN python -m pip install poetry 
+RUN python -m poetry config virtualenvs.create false
+RUN python -m poetry install --no-dev
+
+# Chown for all files to the app user
+RUN chown -R zloy:zloy ${PROJECT_HOME}
+
+# Change user to app user
+USER zloy
+
+# Entrypoint
+ENTRYPOINT ["/bin/sh", "/home/zloy/zloy_bot/docker/entrypoint.prod.sh"]

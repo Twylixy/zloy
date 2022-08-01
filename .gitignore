@@ -1,0 +1,8 @@
+.git/
+.venv/
+.vscode/
+__pycache__/
+shared/
+
+.env.dev
+.env.production

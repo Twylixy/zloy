@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  database:
+    image: postgres:14.2
+    container_name: database
+    env_file: ./.env.dev
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "/bin/sh", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  bot:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.dev
+    container_name: zloy_bot
+    env_file: ./.env.dev
+    volumes:
+      - .:/usr/src/zloy/
+    depends_on:
+      database:
+        condition: service_healthy

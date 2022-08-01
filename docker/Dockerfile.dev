@@ -1,0 +1,17 @@
+FROM python:3.9.8-alpine
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /usr/src/zloy
+COPY . .
+
+RUN apk update
+RUN apk add postgresql-dev gcc musl-dev
+RUN python -m pip install poetry
+RUN python -m poetry config virtualenvs.create false
+RUN python -m poetry install --no-dev
+
+RUN chmod +x /usr/src/zloy/docker/entrypoint.dev.sh
+
+ENTRYPOINT ["/bin/sh", "/usr/src/zloy/docker/entrypoint.dev.sh"]

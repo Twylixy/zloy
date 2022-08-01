@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  database:
+    image: postgres:14.2
+    container_name: database
+    env_file: ./.env.production
+    healthcheck:
+      test: [ "/bin/sh", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    volumes:
+      - ./shared/postgres-data-prod/:/var/lib/postgresql/data/
+    networks:
+      - zloy_network
+
+  bot:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.prod
+    container_name: zloy_bot
+    env_file: ./.env.production
+    depends_on:
+      - database
+    networks:
+      - zloy_network
+
+networks:
+  zloy_network:
+    driver: bridge
+    name: zloy_network
