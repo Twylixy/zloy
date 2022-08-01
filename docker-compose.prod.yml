@@ -6,11 +6,11 @@ services:
     container_name: database
     env_file: ./.env.production
     healthcheck:
-      test: [ "/bin/sh", "pg_isready" ]
-      interval: 5s
-      timeout: 5s
+      test: [ "CMD", "pg_isready" ]
+      interval: 3s
+      timeout: 3s
       retries: 3
-      start_period: 5s
+      start_period: 3s
     volumes:
       - ./shared/postgres-data-prod/:/var/lib/postgresql/data/
     networks:
@@ -23,7 +23,8 @@ services:
     container_name: zloy_bot
     env_file: ./.env.production
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - zloy_network
 
