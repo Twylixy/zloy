@@ -68,6 +68,8 @@ async def ping(message: types.Message) -> None:
         result += "HTTP ratelimit"
 
     result = result or "I'm online"
+
+    await message.delete()
     await zloy_instance.send_message(message.from_id, result)
 
 
