@@ -1,6 +1,7 @@
 import asyncio
 import os
 
+import peewee
 import requests
 from aiogram import Bot, Dispatcher, types
 
@@ -48,11 +49,18 @@ async def ping(message: types.Message) -> None:
     result = ""
 
     try:
-        BaseRepository.Meta.database.connect()
+        database = peewee.PostgresqlDatabase(
+            host=os.getenv("DATABASE_HOST", "database"),
+            port=os.getenv("DATABASE_PORT", 5432),
+            user=os.getenv("DATABASE_USER", "postgres"),
+            password=os.getenv("DATABASE_PASSWORD", "postgres"),
+            database=os.getenv("DATABASE_NAME", "postgres"),
+        )
+        database.connect()
     except Exception:
         result += "Database is unreachable\n"
     finally:
-        BaseRepository.Meta.database.close()
+        database.close()
 
     try:
         requests.get("https://t.me/").raise_for_status()
