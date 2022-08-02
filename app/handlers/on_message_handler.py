@@ -10,9 +10,10 @@ async def handle_on_message(message: types.Message, zloy: Bot) -> None:
     member = await zloy.get_chat_member(message.chat.id, message.from_id)
     violation_report = inspect_message_content(message)
     violations_level_count = 0
+    message_text = message.text or message.caption
 
     if not violation_report.has_violations:
-        if (("#v_" in message.text) or ("#b_" in message.text)) and (
+        if (("#v_" in message_text) or ("#b_" in message_text)) and (
             member.status != "creator"
         ):
             await zloy.send_message(

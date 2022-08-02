@@ -1,6 +1,6 @@
+from aiogram import types
 from aiogram.utils.executor import start_polling
 
-from aiogram import types
 from app.entrypoints import ban, dispatcher, loop, on_message, on_startup, ping
 
 dispatcher.register_message_handler(

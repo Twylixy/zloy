@@ -8,7 +8,6 @@ from aiogram import Bot, Dispatcher, types
 from app.handlers.ban_handler import handle_ban
 from app.handlers.on_message_handler import handle_on_message
 from app.helpers.builders import init_database
-from app.repositories.base import BaseRepository
 
 loop = asyncio.get_event_loop()
 
@@ -30,7 +29,6 @@ async def on_startup(*args, **kwargs):
 
 
 async def on_message(message: types.Message) -> None:
-    print(message)
     if message.chat.id == message.from_id:
         return
     await handle_on_message(message, zloy_instance)
