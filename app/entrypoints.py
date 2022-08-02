@@ -30,9 +30,9 @@ async def on_startup(*args, **kwargs):
 
 
 async def on_message(message: types.Message) -> None:
+    print(message)
     if message.chat.id == message.from_id:
         return
-
     await handle_on_message(message, zloy_instance)
 
 
@@ -79,7 +79,7 @@ async def ban(message: types.Message) -> None:
 
     member = await zloy_instance.get_chat_member(message.chat.id, message.from_id)
 
-    if member.status != "administrator" or member.status != "creator":
+    if member.status != "administrator" and member.status != "creator":
         await message.delete()
         return
 

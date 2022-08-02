@@ -7,7 +7,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: [ "/bin/sh", "pg_isready" ]
+      test: [ "CMD", "pg_isready" ]
       interval: 5s
       timeout: 5s
       retries: 3

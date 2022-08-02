@@ -39,10 +39,17 @@ def inspect_message_content(message: types.Message) -> ViolationReport:
 
     violation_report = ViolationReport(**violation_report_builder)
 
-    if not message.entities:
+    if message.caption and not message.text:
+        message_entities = message.caption_entities
+        message_text = message.caption
+    else:
+        message_entities = message.entities
+        message_text = message.text
+
+    if not message_entities:
         return violation_report
 
-    for entity in message.entities:
+    for entity in message_entities:
         if entity.type not in ["url", "mention", "text_link", "text_mention"]:
             continue
 
@@ -55,19 +62,17 @@ def inspect_message_content(message: types.Message) -> ViolationReport:
         elif entity.type == "text_mention":
             if not violation_report.has_user_mentions:
                 violation_report.has_user_mentions = True
-            violation_report.user_mentions.append(
-                entity.user.first_name + entity.user.last_name
-            )
+            violation_report.user_mentions.append(entity.user.full_name)
         elif entity.type == "url":
             if not violation_report.has_violations:
                 violation_report.has_violations = True
             if not violation_report.has_urls:
                 violation_report.has_urls = True
 
-            link = message.text[entity.offset : entity.offset + entity.length]
+            link = message_text[entity.offset : entity.offset + entity.length]
             violation_report.urls.append(link)
         else:
-            mention = message.text[entity.offset : entity.offset + entity.length]
+            mention = message_text[entity.offset : entity.offset + entity.length]
             link = f"https://t.me/{mention.replace('@', '')}"
             response = requests.get(link)
 
