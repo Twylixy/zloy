@@ -24,7 +24,6 @@ docker-compose -f docker-compose.prod.yml -p zloy up -d
 ```
 
 ## Features
-  * Links filter
   * Channel mentions detector
   * Ban anonymous users
-  * Auto-moderation system
+  * Auto-moderation system (links, channel mentions)

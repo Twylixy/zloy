@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from aiogram import Bot, types
 
@@ -12,7 +13,7 @@ async def handle_on_message(message: types.Message, zloy: Bot) -> None:
     violations_level_count = 0
     message_text = message.text or message.caption
 
-    if not violation_report.has_violations:
+    if violation_report.has_violations is False:
         if (("#v_" in message_text) or ("#b_" in message_text)) and (
             member.status != "creator"
         ):
@@ -37,15 +38,16 @@ async def handle_on_message(message: types.Message, zloy: Bot) -> None:
         user_mentions=" ".join(violation_report.user_mentions),
         has_channel_mentions=violation_report.has_channel_mentions,
         channel_mentions=" ".join(violation_report.channel_mentions),
-        reason="Violated due to results of message inspection",
+        reason=violation_report.reason,
     )
 
-    violations = ViolationRepository.select().where(
+    violations: Optional[ViolationRepository] = ViolationRepository.select().where(
         ViolationRepository.telegram_id == message.from_id,
     )
 
-    for violation in violations:
-        violations_level_count += violation.violation_level
+    if violations is not None:
+        for violation in violations:  # type: ignore
+            violations_level_count += violation.violation_level
 
     issue_ban = violations_level_count >= int(os.getenv("VIOLATIONS_LIMIT", 15))
 
@@ -53,27 +55,27 @@ async def handle_on_message(message: types.Message, zloy: Bot) -> None:
         ban_message = f"""
 🚫 <b>Блокировка</b>
 
-🌐 <i>Источник</i>: <b><a href="tg://user?id={message.sender_chat.id}">{message.sender_chat.title}</a></b>
+🌐 <i>Источник</i>: <b>{message.sender_chat.title}</b>
 🛡 <i>Администратор</i>: <b><a href="tg://user?id={os.getenv('BOT_TELEGRAM_ID')}">🔥 Zloy</a></b>
-📜 <i>Причина</i>: <code>Violations limit has been exceed</code>
+📜 <i>Причина</i>: <code>{violation_report.reason}</code>
 
 <i>Блокировка являяется вечной, не подлежит снятию.</i>
 
-meta #b_{message.sender_chat.title} #b_{message.sender_chat.id}
+meta #b_{message.sender_chat.title.replace(' ', '_')} #b_{message.sender_chat.id}
         """
 
         violation_message = f"""
 ⚠️ <b>Нарушение ({violations_level_count}/{os.getenv("VIOLATIONS_LIMIT")})</b>
 
-🌐 <i>Источник</i>: <b><a href="tg://user?id={message.sender_chat.id}">{message.sender_chat.title}</a></b>
+🌐 <i>Источник</i>: <b>{message.sender_chat.title}</b>
 🛡 <i>Администратор</i>: <b><a href="tg://user?id={os.getenv('BOT_TELEGRAM_ID')}">🔥 Zloy</a></b>
-📜 <i>Причина</i>: <code>Violated due to results of message inspection</code>
+📜 <i>Причина</i>: <code>{violation_report.reason}</code>
 
-📌 <b><a href="http://www.example.com/">Правила</a></b>
+📌 <b><a href="{os.getenv("RULES_LINK")}">Правила</a></b>
 
 <i>Последующие нарушения приведут к блокировке</i>
 
-meta #v_{message.sender_chat.title} #v_{message.sender_chat.id} {violation_report.violation_level.value}
+meta #v_{message.sender_chat.title.replace(' ', '_')} #v_{message.sender_chat.id}
         """
 
         await zloy.send_message(
@@ -96,11 +98,11 @@ meta #v_{message.sender_chat.title} #v_{message.sender_chat.id} {violation_repor
 
 👤 <i>Пользователь</i>: <b><a href="tg://user?id={message.from_id}">{message.from_user.full_name}</a></b>
 🛡 <i>Администратор</i>: <b><a href="tg://user?id={os.getenv('BOT_TELEGRAM_ID')}">🔥 Zloy</a></b>
-📜 <i>Причина</i>: <code>Violations limit has been exceed</code>
+📜 <i>Причина</i>: <code>{violation_report.reason}</code>
 
 <i>Блокировка являяется вечной, не подлежит снятию</i>
 
-meta #b_{message.from_user.first_name} #b_{message.from_id}
+meta #b_{message.from_user.full_name.replace(' ', '_')} #b_{message.from_id}
         """
 
         violation_message = f"""
@@ -108,13 +110,13 @@ meta #b_{message.from_user.first_name} #b_{message.from_id}
 
 👤 <i>Пользователь</i>: <b><a href="tg://user?id={message.from_id}">{message.from_user.full_name}</a></b>
 🛡 <i>Администратор</i>: <b><a href="tg://user?id={os.getenv('BOT_TELEGRAM_ID')}">🔥 Zloy</a></b>
-📜 <i>Причина</i>: <code>Violated due to results of message inspection</code>
+📜 <i>Причина</i>: <code>{violation_report.reason}</code>
 
 📌 <b><a href="http://www.example.com/">Правила</a></b>
 
 <i>Последующие нарушения приведут к блокировке</i>
 
-meta #v_{message.from_user.first_name} #v_{message.from_id} {violation_report.violation_level.value}
+meta #v_{message.from_user.full_name.replace(' ', '_')} #v_{message.from_id} {violation_report.violation_level.value}
         """
 
         await zloy.send_message(

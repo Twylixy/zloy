@@ -23,13 +23,13 @@ async def handle_ban(message: types.Message, zloy: Bot) -> None:
             message.chat.id,
             f"""
 🚫 <b>Блокировка</b>
-🌐 <i>Источник</i>: <b><a href="tg://user?id={target_user_message.sender_chat.id}">{target_user_message.sender_chat.title}</a></b>
+🌐 <i>Источник</i>: <b>{target_user_message.sender_chat.title}</b>
 🛡 <i>Администратор</i>: <b><a href="tg://user?id={message.from_id}">{message.from_user.full_name}</a></b>
 📜 <i>Причина</i>: <code>{reason}</code>
 
 <i>Блокировка являяется вечной, не подлежит снятию.</i>
 
-meta #b_{target_user_message.sender_chat.title} #b_{target_user_message.sender_chat.id}
+meta #b_{target_user_message.sender_chat.title.replace(' ', '_')} #b_{target_user_message.sender_chat.id}
             """,
             reply_to_message_id=target_user_message.message_id,
         )
@@ -45,7 +45,7 @@ meta #b_{target_user_message.sender_chat.title} #b_{target_user_message.sender_c
 
 <i>Блокировка являяется вечной, не подлежит снятию.</i>
 
-meta #b_{target_user.first_name} #b_{target_user.id}
+meta #b_{target_user.full_name.replace(' ', '_')} #b_{target_user.id}
             """,
             reply_to_message_id=target_user_message.message_id,
         )
