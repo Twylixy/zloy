@@ -28,10 +28,12 @@ dispatcher.register_message_handler(
 )
 dispatcher.register_message_handler(
     chats,
+    commands=["chats"],
     content_types=types.ContentType.TEXT,
 )
 dispatcher.register_message_handler(
     send,
+    commands=["send"],
     content_types=types.ContentType.TEXT,
 )
 
