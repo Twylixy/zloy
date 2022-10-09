@@ -21,6 +21,8 @@ dispatcher = Dispatcher(
     loop=loop,
 )
 
+chats_ids = []
+
 
 async def on_startup(*args, **kwargs):
     if os.getenv("BOT_TELEGRAM_ID") is None:
@@ -31,6 +33,10 @@ async def on_startup(*args, **kwargs):
 async def on_message(message: types.Message) -> None:
     if message.chat.id == message.from_id:
         return
+
+    if message.chat.id not in chats_ids:
+        chats_ids.append(message.chat.id)
+
     await handle_on_message(message, zloy_instance)
 
 
@@ -82,3 +88,43 @@ async def ban(message: types.Message) -> None:
         return
 
     await handle_ban(message, zloy_instance)
+
+
+async def chats(message: types.Message) -> None:
+    if message.chat.id != message.from_id:
+        return
+
+    if message.from_id != os.getenv("OWNER_ID"):
+        return
+
+    result = ""
+    for num, chat_id in enumerate(chats_ids):
+        chat = await zloy_instance.get_chat(chat_id)
+
+        if chat:
+            result += f"<b>{num + 1}</b> <i>{chat.title}</i> <pre>({chat.id})</pre>"
+        else:
+            chats_ids.pop(chat_id)
+
+    await zloy_instance.send_message(message.from_id, result)
+
+
+async def send(message: types.Message) -> None:
+    if message.chat.id != message.from_id:
+        return
+
+    if message.from_id != os.getenv("OWNER_ID"):
+        return
+
+    chat_id = message.get_args()
+
+    if not chat_id:
+        return
+
+    chat_id = chat_id.split(' ')[0]
+
+    if int(chat_id) not in chats_ids:
+        return
+
+    text = message.text.split("\n", 1)[1]
+    await zloy_instance.send_message(chat_id, text)

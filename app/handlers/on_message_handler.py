@@ -112,7 +112,7 @@ meta #b_{message.from_user.full_name.replace(' ', '_')} #b_{message.from_id}
 🛡 <i>Администратор</i>: <b><a href="tg://user?id={os.getenv('BOT_TELEGRAM_ID')}">🔥 Zloy</a></b>
 📜 <i>Причина</i>: <code>{violation_report.reason}</code>
 
-📌 <b><a href="http://www.example.com/">Правила</a></b>
+📌 <b><a href="{os.getenv("RULES_LINK")}">Правила</a></b>
 
 <i>Последующие нарушения приведут к блокировке</i>
 
