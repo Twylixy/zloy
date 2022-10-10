@@ -92,20 +92,23 @@ async def ban(message: types.Message) -> None:
 
 async def chats(message: types.Message) -> None:
     if message.chat.id != message.from_id:
+        await message.delete()
         return
 
-    if message.from_id != os.getenv("OWNER_ID"):
+    if str(message.from_id) != os.getenv("OWNER_ID"):
         return
 
     result = ""
+
     for num, chat_id in enumerate(chats_ids):
         chat = await zloy_instance.get_chat(chat_id)
 
         if chat:
-            result += f"<b>{num + 1}</b> <i>{chat.title}</i> <pre>({chat.id})</pre>"
+            result += f"<b>{num + 1}</b> <i>{chat.title}</i> <pre>({chat.id})</pre>\n"
         else:
             chats_ids.pop(chat_id)
 
+    result = result or "No chats"
     await zloy_instance.send_message(message.from_id, result)
 
 
@@ -113,18 +116,14 @@ async def send(message: types.Message) -> None:
     if message.chat.id != message.from_id:
         return
 
-    if message.from_id != os.getenv("OWNER_ID"):
+    if str(message.from_id) != os.getenv("OWNER_ID"):
         return
 
-    chat_id = message.get_args()
-
-    if not chat_id:
-        return
-
-    chat_id = chat_id.split(' ')[0]
+    command = message.text.split("\n", 1)
+    chat_id = command[0].split(" ", 1)[1]
+    text = command[1]
 
     if int(chat_id) not in chats_ids:
         return
 
-    text = message.text.split("\n", 1)[1]
     await zloy_instance.send_message(chat_id, text)

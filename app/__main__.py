@@ -23,10 +23,6 @@ dispatcher.register_message_handler(
     content_types=types.ContentType.TEXT,
 )
 dispatcher.register_message_handler(
-    on_message,
-    content_types=types.ContentType.ANY,
-)
-dispatcher.register_message_handler(
     chats,
     commands=["chats"],
     content_types=types.ContentType.TEXT,
@@ -35,6 +31,10 @@ dispatcher.register_message_handler(
     send,
     commands=["send"],
     content_types=types.ContentType.TEXT,
+)
+dispatcher.register_message_handler(
+    on_message,
+    content_types=types.ContentType.ANY,
 )
 
 start_polling(

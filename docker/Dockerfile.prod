@@ -27,7 +27,7 @@ RUN apk update
 RUN apk add postgresql-dev gcc musl-dev
 RUN python -m pip install poetry 
 RUN python -m poetry config virtualenvs.create false
-RUN python -m poetry install --no-dev
+RUN python -m poetry install --only main
 
 # Chown for all files to the app user
 RUN chown -R zloy:zloy ${PROJECT_HOME}

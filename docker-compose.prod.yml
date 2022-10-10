@@ -12,7 +12,7 @@ services:
       retries: 3
       start_period: 3s
     volumes:
-      - ./shared/postgres-data-prod/:/var/lib/postgresql/data/
+      - db_volume:/var/lib/postgresql/data/
     networks:
       - zloy_network
 
@@ -27,6 +27,10 @@ services:
         condition: service_healthy
     networks:
       - zloy_network
+
+volumes:
+  db_volume:
+
 
 networks:
   zloy_network:

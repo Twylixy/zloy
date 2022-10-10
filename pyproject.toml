@@ -1,22 +1,26 @@
 [tool.poetry]
-name = "zloy v2"
-version = "0.1.0"
-description = "The Telegram chat-manager bot"
-authors = ["Twylix <zemskov271@gmail.com>"]
+name = "zloy"
+version = "2.0"
+description = "The simple chat manager for Telegram"
+authors = ["Nikita Zemskov <zemskov271@gmail.com>"]
 license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aiogram = "^2.21"
-psycopg2 = "^2.9.3"
-peewee = "^3.15.1"
+aiogram = "^2.22.2"
+psycopg2 = "^2.9.4"
+peewee = "^3.15.3"
 requests = "^2.28.1"
 beautifulsoup4 = "^4.11.1"
 
-[tool.poetry.dev-dependencies]
-black = "^22.6.0"
+[tool.poetry.group.lint.dependencies]
+black = "^22.10.0"
 isort = "^5.10.1"
 
+[tool.poetry.group.debug.dependencies]
+debugpy = "^1.6.3"
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

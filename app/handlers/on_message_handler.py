@@ -8,7 +8,12 @@ from app.repositories.violations import ViolationRepository
 
 
 async def handle_on_message(message: types.Message, zloy: Bot) -> None:
-    member = await zloy.get_chat_member(message.chat.id, message.from_id)
+    try:
+        member = await zloy.get_chat_member(message.chat.id, message.from_id)
+    except:
+        print("can't get member:", message.from_id)
+        return None
+        
     violation_report = inspect_message_content(message)
     violations_level_count = 0
     message_text = message.text or message.caption
